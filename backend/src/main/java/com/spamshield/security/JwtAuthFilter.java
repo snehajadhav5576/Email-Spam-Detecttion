@@ -15,12 +15,12 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 /**
- * Reads JWT from HttpOnly cookie (__Host-auth) — never from localStorage or request params.
+ * Reads JWT from HttpOnly cookie (auth-token) — never from localStorage or request params.
  */
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
 
-    private static final String COOKIE_NAME = "__Host-auth";
+    private static final String COOKIE_NAME = "auth-token";
 
     private final JwtUtil jwtUtil;
     private final UserDetailsServiceImpl userDetailsService;

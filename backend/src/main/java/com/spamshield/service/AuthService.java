@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthService {
 
     private static final Logger log = LoggerFactory.getLogger(AuthService.class);
-    private static final String COOKIE_NAME = "__Host-auth";
+    private static final String COOKIE_NAME = "auth-token";
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -90,13 +90,13 @@ public class AuthService {
     }
 
     private void setAuthCookie(HttpServletResponse response, String token) {
-        // HttpOnly + Secure + SameSite=Lax — token not accessible from JS
+        // HttpOnly + Secure + SameSite=None — required for cross-domain (Vercel → Render)
         Cookie cookie = new Cookie(COOKIE_NAME, token);
         cookie.setHttpOnly(true);
-        cookie.setSecure(true);      // Enforced by __Host- prefix in production
+        cookie.setSecure(true);      // Required when SameSite=None
         cookie.setPath("/");
         cookie.setMaxAge(86400);     // 24h — matches JWT expiry
-        cookie.setAttribute("SameSite", "Lax");
+        cookie.setAttribute("SameSite", "None");
         response.addCookie(cookie);
     }
 
@@ -106,7 +106,7 @@ public class AuthService {
         cookie.setSecure(true);
         cookie.setPath("/");
         cookie.setMaxAge(0);
-        cookie.setAttribute("SameSite", "Lax");
+        cookie.setAttribute("SameSite", "None");
         response.addCookie(cookie);
     }
 
