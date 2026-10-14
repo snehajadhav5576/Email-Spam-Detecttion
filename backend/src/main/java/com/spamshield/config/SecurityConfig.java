@@ -28,6 +28,9 @@ public class SecurityConfig {
     @Value("${cors.allowed-origins:http://localhost:5173}")
     private String allowedOrigins;
 
+    @Value("${cors.allowed-origin-patterns:}")
+    private String allowedOriginPatterns;
+
     private final JwtAuthFilter jwtAuthFilter;
 
     public SecurityConfig(JwtAuthFilter jwtAuthFilter) {
@@ -75,10 +78,25 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        // Allow-list: only the configured frontend origin — no wildcard
-        config.setAllowedOrigins(List.of(allowedOrigins.split(",")));
+
+        // Parse comma-separated origins and trim whitespace
+        List<String> origins = java.util.Arrays.stream(allowedOrigins.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isBlank())
+                .collect(java.util.stream.Collectors.toList());
+        config.setAllowedOrigins(origins);
+
+        // Optional: allow origin patterns (e.g. https://*.vercel.app) for preview deployments
+        if (allowedOriginPatterns != null && !allowedOriginPatterns.isBlank()) {
+            List<String> patterns = java.util.Arrays.stream(allowedOriginPatterns.split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isBlank())
+                    .collect(java.util.stream.Collectors.toList());
+            config.setAllowedOriginPatterns(patterns);
+        }
+
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With"));
+        config.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With", "X-XSRF-TOKEN"));
         config.setAllowCredentials(true);  // Required for cookies
         config.setMaxAge(3600L);
 

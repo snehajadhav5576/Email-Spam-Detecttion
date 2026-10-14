@@ -48,7 +48,8 @@ public class AuthController {
     public ApiResponse<UserDto> me(@AuthenticationPrincipal UserDetails userDetails) {
         // Build minimal DTO from security context — no extra DB call needed here
         // Full profile is at GET /api/profile
-        return ApiResponse.ok(null);
+        UserDto dto = authService.getUserByEmail(userDetails.getUsername());
+        return ApiResponse.ok(null, dto);
     }
 
     private String getClientIp(HttpServletRequest request) {

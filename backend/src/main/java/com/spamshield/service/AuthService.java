@@ -89,6 +89,12 @@ public class AuthService {
         userRepository.findByEmail(email).ifPresent(u -> audit(u, "LOGOUT", AuditLog.Status.SUCCESS, ipAddress));
     }
 
+    public UserDto getUserByEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
+        return toDto(user);
+    }
+
     private void setAuthCookie(HttpServletResponse response, String token) {
         // HttpOnly + Secure + SameSite=None — required for cross-domain (Vercel → Render)
         Cookie cookie = new Cookie(COOKIE_NAME, token);
