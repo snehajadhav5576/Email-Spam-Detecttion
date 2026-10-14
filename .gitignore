@@ -1,0 +1,30 @@
+ml-service/models/*.pkl
+ml-service/models/version.txt
+ml-service/models/metrics.json
+ml-service/venv/
+ml-service/__pycache__/
+ml-service/app/__pycache__/
+ml-service/training/__pycache__/
+ml-service/tests/__pycache__/
+
+# Backend
+backend/target/
+backend/.env
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets
+*.env
+jwt_secret.txt
